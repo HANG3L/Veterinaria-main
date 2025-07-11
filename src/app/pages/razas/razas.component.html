@@ -1,0 +1,88 @@
+<mat-card class="cardWithShadow">
+  <mat-card-content>
+    <div class="acciones" style="display: flex; justify-content: space-between; align-items: center;">
+        <h4>Razas</h4>
+        <div>
+            <button mat-raised-button color="primary" (click)="abrirDialogo()">Agregar</button>
+            <button mat-raised-button color="secundary" (click)="recargar()">Recargar</button>
+        </div>
+    </div>
+
+    <hr>
+    <mat-progress-bar *ngIf="cargando" mode="indeterminate"></mat-progress-bar>
+
+    <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" *ngIf="!cargando">
+        <ng-container matColumnDef="id">
+            <th mat-header-cell *matHeaderCellDef>ID</th>
+            <td mat-cell *matCellDef="let e">{{ e.id }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="nombre">
+            <th mat-header-cell *matHeaderCellDef>Nombre</th>
+            <td mat-cell *matCellDef="let e">{{ e.nombre }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="especie">
+            <th mat-header-cell *matHeaderCellDef>Especie</th>
+            <td mat-cell *matCellDef="let e">{{ e.especieDescripcion }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="acciones">
+            <th mat-header-cell *matHeaderCellDef [style.width.px]="120">Acciones</th>
+            <td mat-cell *matCellDef="let e">
+            <button mat-icon-button (click)="abrirDialogo(e)">
+                <mat-icon style="font-size: 18px;">edit</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" (click)="eliminar(e.id)">
+                <mat-icon style="font-size: 18px; color: red;">delete</mat-icon>
+            </button>
+            </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+
+    <mat-paginator
+      showFirstLastButtons
+      [pageSize]="10"
+    ></mat-paginator>
+  </mat-card-content>
+</mat-card>
+
+<ng-template #formDialog>
+  <h2 mat-dialog-title>{{ editando ? 'Editar' : 'Agregar' }} Raza</h2>
+  <div mat-dialog-content>
+    <form [formGroup]="form">
+      <mat-form-field appearance="outline" class="w-full" style="width: 100%; margin-top: 5px;">
+        <mat-label>Nombre</mat-label>
+        <input matInput formControlName="nombre" />
+        <mat-error *ngIf="form.controls['nombre'].hasError('required')">
+          El nombre es requerido
+        </mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="w-full" style="width: 100%; margin-top: 10px;">
+        <mat-label>Especie</mat-label>
+        <mat-select formControlName="especieId">
+          <mat-option *ngFor="let especie of especies" [value]="especie.id">
+            {{ especie.nombre }}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="form.controls['especieId'].hasError('required')">
+          Debes seleccionar una especie
+        </mat-error>
+      </mat-form-field>
+    </form>
+  </div>
+  <div mat-dialog-actions align="end">
+    <button mat-button [disabled]="guardando" (click)="dialog.closeAll()">Cancelar</button>
+    <button mat-raised-button color="primary" [disabled]="guardando" (click)="guardar()">
+      <ng-container *ngIf="guardando">
+        <mat-spinner diameter="20" strokeWidth="3"></mat-spinner>
+      </ng-container>
+      <ng-container *ngIf="!guardando">
+        Guardar
+      </ng-container>
+    </button>
+  </div>
+</ng-template>

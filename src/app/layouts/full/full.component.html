@@ -1,0 +1,61 @@
+<style>
+  .mainWrapper{
+    position: relative;
+    margin-top: 0px;
+  }
+
+  .mainWrapper::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: url('/assets/images/fondo.jpg');
+    background-size: 30%; /* Aquí haces la imagen más pequeña */
+    background-position: center;
+    opacity: 0.1; /* Aquí la haces más opaca */
+    z-index: 0;
+  }
+
+  .mainWrapper > *{
+    position: relative;
+    z-index: 1;
+  }
+</style>
+
+<mat-sidenav-container class="mainWrapper blue_theme light-theme" autosize autoFocus dir="ltr">
+  <!-- ============================================================== -->
+  <!-- Vertical Sidebar -->
+  <!-- ============================================================== -->
+  <mat-sidenav #leftsidenav [mode]="isOver ? 'over' : 'side'" [opened]="!isOver"
+    (openedChange)="onSidenavOpenedChange($event)" (closedStart)="onSidenavClosedStart()" class="sidebarNav">
+    <div class="flex-layout">
+      <app-sidebar (toggleMobileNav)="sidenav.toggle()" [showToggle]="isOver"></app-sidebar>
+      <ng-scrollbar class="position-relative" style="height: 100%">
+        <mat-nav-list class="sidebar-list">
+          @for(item of navItems; track item) {
+          <app-nav-item [item]="item" (notify)="sidenav.toggle()">
+          </app-nav-item>
+          }
+        </mat-nav-list>
+      </ng-scrollbar>
+    </div>
+  </mat-sidenav>
+  
+  <!-- ============================================================== -->
+  <!-- Main Content -->
+  <!-- ============================================================== -->
+  <mat-sidenav-content class="contentWrapper" #content>
+    <!-- ============================================================== -->
+    <!-- VerticalHeader -->
+    <!-- ============================================================== -->
+    
+    <app-header [showToggle]="!isOver" (toggleMobileNav)="sidenav.toggle()"></app-header>
+    
+    <main class="pageWrapper maxWidth">
+      <!-- ============================================================== -->
+      <!-- Outlet -->
+      <!-- ============================================================== -->
+      <router-outlet></router-outlet>
+    </main>
+  </mat-sidenav-content>
+
+</mat-sidenav-container>
